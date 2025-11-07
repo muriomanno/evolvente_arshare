@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>&lt;model-viewer&gt; template</title>
+    <meta charset="utf-8">
+    <meta name="description" content="&lt;model-viewer&gt; template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
+    <!-- CSS aggiuntivo per il logo overlay -->
+    <link type="text/css" href="./styles_2.css" rel="stylesheet"/>
+    <!-- Favicon dedicata (diversa dal logo overlay) -->
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <!-- Fallback PNG -->
+    <link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="./favicon-180.png">
+    <!-- (Opzionale) colore barra del browser -->
+    <meta name="theme-color" content="#0b0c0f">
+  </head>
+  <body>
+    <!-- <model-viewer> HTML element -->
+    <model-viewer
+      src="mec.glb"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      tone-mapping="neutral"
+      poster="poster.webp"
+      shadow-intensity="1.75"
+      exposure="1"
+      environment-image="aircraft_workshop_01_1k.hdr"
+      min-camera-orbit="auto auto 5.201m"
+      min-field-of-view="15.67deg">
+
+      <!-- HOTSPOT inseriti tramite modeleditor (ora nascondibili via toggle) -->
+      <button class="Hotspot" slot="hotspot-1" data-position="1.4000000029802322m 1.3092575080869793m -0.4607462984277556m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Quadro comandi</div>
+      </button>
+      <button class="Hotspot" slot="hotspot-2" data-position="-1.524990965533547m 0.5350553818937596m -0.053372119837808485m" data-normal="-0.999999914771973m -2.7847247302913394e-16m -0.0004128632301981563m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Accessorio lavaggio automatico</div>
+      </button>
+      <button class="Hotspot" slot="hotspot-3" data-position="0.05600506067275912m 2.7996217155077723m -0.9863649904899031m" data-normal="1m 5.551120000000018e-17m -2.220446049250313e-16m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Attuatore con vite a ricircolo di sfere</div>
+      </button>
+      <button class="Hotspot" slot="hotspot-4" data-position="-0.42334172946592913m 2.222854283116906m 0.1120040605729068m" data-normal="0m 1m 1.0880185641326534e-14m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Tappo anti schizzo con sistema di adduzione liquido-solido</div>
+      </button>
+      <button class="Hotspot" slot="hotspot-5" data-position="0.02172138808452495m 1.3478399997764823m 0.05693380016905908m" data-normal="7.107045327439278e-15m 1m 1.530780264173269e-14m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Frusta con doppia lama</div>
+      </button>
+
+      <!-- Dimensioni (stile "pill" come nella demo; posizionate via JS) -->
+      <div class="Dim Hotspot" slot="hotspot-dim-x-min" data-position="0m 0m 0m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
+        <div class="DimLabel" id="dim-x-label">X</div>
+      </div>
+      <div class="Dim Hotspot" slot="hotspot-dim-y-min" data-position="0m 0m 0m" data-normal="0m 1m 0m" data-visibility-attribute="visible">
+        <div class="DimLabel" id="dim-y-label">Y</div>
+      </div>
+      <div class="Dim Hotspot" slot="hotspot-dim-z-min" data-position="0m 0m 0m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
+        <div class="DimLabel" id="dim-z-label">Z</div>
+      </div>
+
+      <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+      </div>
+      <button slot="ar-button" id="ar-button">View in your space</button>
+      <div id="ar-prompt">
+        <img src="ar_hand_prompt.png" alt="">
+      </div>
+    </model-viewer>
+
+    <!-- UI: spunte per annotazioni e dimensioni -->
+    <div class="mv-ui">
+      <label><input type="checkbox" id="toggle-annotazioni" checked> Mostra annotazioni</label>
+      <label><input type="checkbox" id="toggle-dimensioni" checked> Mostra dimensioni</label>
+    </div>
+
+    <!-- Logo overlay -->
+    <div class="logo-overlay">
+      <img src="./Asset%2026BW.svg" alt="Logo">
+    </div>
+
+    <script src="script.js"></script>
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+    <!-- Logica toggle + dimensioni -->
+    <script>
+      (function() {
+        const mv = document.querySelector('model-viewer');
+        const chkAnnotazioni = document.getElementById('toggle-annotazioni');
+        const chkDimensioni  = document.getElementById('toggle-dimensioni');
+        const dimX = document.getElementById('dim-x-label');
+        const dimY = document.getElementById('dim-y-label');
+        const dimZ = document.getElementById('dim-z-label');
+
+        function updateAnnotazioni() {
+          const annos = mv.querySelectorAll('.Hotspot:not(.Dim)');
+          annos.forEach(el => { el.style.display = chkAnnotazioni.checked ? '' : 'none'; });
+        }
+
+        function updateDimensioni() {
+          const dims = mv.querySelectorAll('.Dim');
+          dims.forEach(el => { el.style.display = chkDimensioni.checked ? '' : 'none'; });
+        }
+
+        function placeDimensions() {
+          const d = mv.getDimensions(); // {x,y,z} in metri
+          if (!d) return;
+
+          dimX.textContent = d.x.toFixed(2) + ' m';
+          dimY.textContent = d.y.toFixed(2) + ' m';
+          dimZ.textContent = d.z.toFixed(2) + ' m';
+
+          const hx = (d.x / 2).toFixed(4);
+          const hy = (d.y / 2).toFixed(4);
+          const hz = (d.z / 2).toFixed(4);
+
+          mv.querySelector('[slot="hotspot-dim-x-min"]')
+            .setAttribute('data-position', `${hx}m 0m 0m`);
+          mv.querySelector('[slot="hotspot-dim-y-min"]')
+            .setAttribute('data-position', `0m ${hy}m 0m`);
+          mv.querySelector('[slot="hotspot-dim-z-min"]')
+            .setAttribute('data-position', `0m 0m ${hz}m`);
+        }
+
+        mv.addEventListener('load', () => {
+          placeDimensions();
+          updateAnnotazioni();
+          updateDimensioni();
+        });
+
+        chkAnnotazioni.addEventListener('change', updateAnnotazioni);
+        chkDimensioni .addEventListener('change', updateDimensioni);
+      })();
+    </script>
+  </body>
+</html>
