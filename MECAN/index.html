@@ -23,12 +23,11 @@
       </div>
     </model-viewer>
 
-    <!-- Overlay logo non cliccabile -->
-    <div class="logo-overlay">
-      <!-- Se il file ha lo spazio nel nome, uso %20 -->
-      <img src="./Asset%2026BW.svg" alt="Logo">
-    </div>
+  <div class="logo-overlay" style="position:fixed;top:16px;left:16px;z-index:99999;pointer-events:none;outline:2px dashed red">
+  <img src="./Asset%2026BW.svg" alt="Logo" style="display:block;width:160px;height:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))">
+</div>
 
+    
     <script src="script.js"></script>
     <!-- Loads <model-viewer> for browsers: -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
