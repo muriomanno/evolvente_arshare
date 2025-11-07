@@ -14,16 +14,16 @@
     <link rel="apple-touch-icon" href="./favicon-180.png">
     <meta name="theme-color" content="#0b0c0f">
 
-    <!-- Stile minimo per le linee tratteggiate (come nella demo) -->
+    <!-- Micro-regole utili al toggle generico -->
     <style>
-      .dimensionLineContainer{ pointer-events:none; display:block; }
-      .dimensionLine{ stroke:#16a5e6; stroke-width:2; stroke-dasharray:2; }
-      .dim.hide, .dimensionLine.hide{ display:none; }
+      .is-hidden { display: none !important; }
+      .dimensionLineContainer { pointer-events: none; display: block; }
+      .dimensionLine { stroke: #16a5e6; stroke-width: 2; stroke-dasharray: 2; }
     </style>
   </head>
   <body>
     <model-viewer
-      id="mv"
+      class="js-mv"
       src="mec.glb"
       ar
       ar-modes="webxr scene-viewer quick-look"
@@ -36,7 +36,7 @@
       min-camera-orbit="auto auto 5.201m"
       min-field-of-view="15.67deg">
 
-      <!-- I TUOI HOTSPOT (annotazioni) - restano invariati e ora sono togliibili -->
+      <!-- I TUOI HOTSPOT (annotazioni) -->
       <button class="Hotspot" slot="hotspot-1" data-position="1.4000000029802322m 1.3092575080869793m -0.4607462984277556m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
         <div class="HotspotAnnotation">Quadro comandi</div>
       </button>
@@ -53,24 +53,24 @@
         <div class="HotspotAnnotation">Frusta con doppia lama</div>
       </button>
 
-      <!-- === BOUNDING BOX DIMENSIONS (come nella demo) === -->
-      <!-- Vertici (8 dot) -->
-      <button slot="hotspot-dot+X-Y+Z" class="dot dim"    data-position="1 -1  1" data-normal="1 0 0"></button>
-      <button slot="hotspot-dot+X-Y-Z" class="dot dim"    data-position="1 -1 -1" data-normal="1 0 0"></button>
-      <button slot="hotspot-dot+X+Y-Z" class="dot dim"    data-position="1  1 -1" data-normal="0 1 0"></button>
-      <button slot="hotspot-dot-X+Y-Z" class="dot dim"    data-position="-1 1 -1" data-normal="0 1 0"></button>
-      <button slot="hotspot-dot-X-Y-Z" class="dot dim"    data-position="-1 -1 -1" data-normal="-1 0 0"></button>
-      <button slot="hotspot-dot-X-Y+Z" class="dot dim"    data-position="-1 -1 1" data-normal="-1 0 0"></button>
+      <!-- === BOUNDING BOX DIMENSIONS (gruppo "dims") === -->
+      <!-- DOT ai vertici -->
+      <button slot="hotspot-dot+X-Y+Z" class="dot dim" data-role="dims" data-position="1 -1  1" data-normal="1 0 0"></button>
+      <button slot="hotspot-dot+X-Y-Z" class="dot dim" data-role="dims" data-position="1 -1 -1" data-normal="1 0 0"></button>
+      <button slot="hotspot-dot+X+Y-Z" class="dot dim" data-role="dims" data-position="1  1 -1" data-normal="0 1 0"></button>
+      <button slot="hotspot-dot-X+Y-Z" class="dot dim" data-role="dims" data-position="-1 1 -1" data-normal="0 1 0"></button>
+      <button slot="hotspot-dot-X-Y-Z" class="dot dim" data-role="dims" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+      <button slot="hotspot-dot-X-Y+Z" class="dot dim" data-role="dims" data-position="-1 -1 1" data-normal="-1 0 0"></button>
 
-      <!-- Etichette dimensioni (3) sulle tre facce ortogonali -->
-      <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0"  data-normal="1 0 0"></button> <!-- mostra Z -->
-      <button slot="hotspot-dim+X-Z" class="dim" data-position="1  0 -1" data-normal="1 0 0"></button> <!-- mostra Y -->
-      <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button> <!-- mostra Y (lato opposto) -->
-      <button slot="hotspot-dim-Y-Z" class="dim" data-position="0  1 -1" data-normal="0 1 0"></button>  <!-- mostra X -->
-      <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button> <!-- mostra Z (lato opposto) -->
+      <!-- Etichette -->
+      <button slot="hotspot-dim+X-Y" class="dim" data-role="dims" data-position="1 -1 0"  data-normal="1 0 0"></button>
+      <button slot="hotspot-dim+X-Z" class="dim" data-role="dims" data-position="1  0 -1" data-normal="1 0 0"></button>
+      <button slot="hotspot-dim-X-Z" class="dim" data-role="dims" data-position="-1 0 -1" data-normal="-1 0 0"></button>
+      <button slot="hotspot-dim-Y-Z" class="dim" data-role="dims" data-position="0  1 -1" data-normal="0 1 0"></button>
+      <button slot="hotspot-dim-X-Y" class="dim" data-role="dims" data-position="-1 -1 0" data-normal="-1 0 0"></button>
 
-      <!-- Linee tratteggiate (5) -->
-      <svg id="dimLines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
+      <!-- Linee tratteggiate SVG (fa parte del gruppo dims) -->
+      <svg class="dimensionLineContainer js-lines" data-role="dims" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <line class="dimensionLine"></line>
         <line class="dimensionLine"></line>
         <line class="dimensionLine"></line>
@@ -78,16 +78,16 @@
         <line class="dimensionLine"></line>
       </svg>
 
-      <!-- barra di progresso / AR prompt -->
+      <!-- progress / AR prompt -->
       <div class="progress-bar hide" slot="progress-bar"><div class="update-bar"></div></div>
       <button slot="ar-button" id="ar-button">View in your space</button>
       <div id="ar-prompt"><img src="ar_hand_prompt.png" alt=""></div>
     </model-viewer>
 
-    <!-- UI overlay: toggle annotazioni + dimensioni -->
+    <!-- UI toggle -->
     <div class="mv-ui">
-      <label><input type="checkbox" id="toggle-annotazioni" checked> Mostra annotazioni</label>
-      <label><input type="checkbox" id="toggle-dimensioni" checked> Mostra dimensioni</label>
+      <label><input type="checkbox" class="js-toggle-annos" checked> Mostra annotazioni</label>
+      <label><input type="checkbox" class="js-toggle-dims"  checked> Mostra dimensioni</label>
     </div>
 
     <!-- Logo -->
@@ -98,49 +98,39 @@
     <script src="script.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
-    <!-- Logica dimensioni + toggle (adattata dalla demo ufficiale) -->
+    <!-- Logica parametrica pulita -->
     <script>
       (function(){
-        const mv = document.getElementById('mv');
+        const mv = document.querySelector('.js-mv');
+        const chkAnno = document.querySelector('.js-toggle-annos');
+        const chkDims = document.querySelector('.js-toggle-dims');
 
-        // --- Toggle ---
-        const chkAnno = document.getElementById('toggle-annotazioni');
-        const chkDims = document.getElementById('toggle-dimensioni');
+        // Gruppi per toggle
+        const annoEls = () => mv.querySelectorAll('.Hotspot:not([data-role="dims"])');
+        const dimsEls = () => mv.querySelectorAll('[data-role="dims"]');
+        const dimLines = () => mv.querySelectorAll('.js-lines .dimensionLine');
 
-        function setAnnoVisibility() {
-          mv.querySelectorAll('.Hotspot:not(.dim)').forEach(el => {
-            el.style.display = chkAnno.checked ? '' : 'none';
-          });
+        // Stato
+        let annosVisible = true;
+        let dimsVisible  = true;
+
+        // Helpers toggle
+        function setGroupVisible(nodeList, visible){
+          nodeList.forEach(el => el.classList.toggle('is-hidden', !visible));
+        }
+        function setAnnoVisibility(v = chkAnno.checked){
+          annosVisible = v;
+          setGroupVisible(annoEls(), v);
+        }
+        function setDimsVisibility(v = chkDims.checked){
+          dimsVisible = v;
+          setGroupVisible(dimsEls(), v);
+          if (!v) dimLines().forEach(l => l.classList.add('is-hidden')); // spegni anche eventuali linee già disegnate
         }
 
-        function setDimsVisibility(visible) {
-          // Etichette + linee + dot
-          const dimEls = [
-            ...mv.querySelectorAll('.dim'),
-            mv.querySelector('#dimLines')
-          ];
-          dimEls.forEach(el => {
-            if (!el) return;
-            if (visible) el.classList.remove('hide');
-            else el.classList.add('hide');
-          });
-        }
-
-        chkAnno.addEventListener('change', setAnnoVisibility);
-        chkDims.addEventListener('change', ()=> setDimsVisibility(chkDims.checked));
-
-        // In AR: nascondi overlay quando parte una sessione "esterna" (Scene Viewer / Quick Look)
-        mv.addEventListener('ar-status', (ev)=>{
-          const {status, mode} = ev.detail; // mode = 'webxr' | 'scene-viewer' | 'quick-look'
-          const allowOverlay = (mode === 'webxr'); // overlay visibili solo in WebXR
-          setDimsVisibility(chkDims.checked && allowOverlay && status !== 'session-started');
-          setAnnoVisibility(); // le annotazioni restano sotto controllo del checkbox; ma in non-WebXR non si vedono comunque
-        });
-
-        // --- Linee tratteggiate (SVG) ---
-        const dimLines = mv.querySelectorAll('#dimLines line');
-
-        function drawLine(svgLine, aName, bName, tieToName) {
+        // Disegno linee tratteggiate (come demo)
+        function drawLine(svgLine, aName, bName, tieToName){
+          if (!dimsVisible) return; // se misure off, non ridisegnare
           const a = mv.queryHotspot(aName);
           const b = mv.queryHotspot(bName);
           const tie = tieToName ? mv.queryHotspot(tieToName) : null;
@@ -151,25 +141,28 @@
           svgLine.setAttribute('x2', b.canvasPosition.x);
           svgLine.setAttribute('y2', b.canvasPosition.y);
 
-          if (tie && !tie.facingCamera) svgLine.classList.add('hide');
-          else svgLine.classList.remove('hide');
+          if (tie && !tie.facingCamera) svgLine.classList.add('is-hidden');
+          else svgLine.classList.remove('is-hidden');
         }
 
         const renderSVG = () => {
-          drawLine(dimLines[0], 'hotspot-dot+X-Y+Z', 'hotspot-dot+X-Y-Z', 'hotspot-dim+X-Y');
-          drawLine(dimLines[1], 'hotspot-dot+X-Y-Z', 'hotspot-dot+X+Y-Z', 'hotspot-dim+X-Z');
-          drawLine(dimLines[2], 'hotspot-dot+X+Y-Z', 'hotspot-dot-X+Y-Z'); // sempre visibile
-          drawLine(dimLines[3], 'hotspot-dot-X+Y-Z', 'hotspot-dot-X-Y-Z', 'hotspot-dim-X-Z');
-          drawLine(dimLines[4], 'hotspot-dot-X-Y-Z', 'hotspot-dot-X-Y+Z', 'hotspot-dim-X-Y');
+          const lines = dimLines();
+          if (lines.length < 5 || !dimsVisible) return;
+
+          drawLine(lines[0], 'hotspot-dot+X-Y+Z', 'hotspot-dot+X-Y-Z', 'hotspot-dim+X-Y');
+          drawLine(lines[1], 'hotspot-dot+X-Y-Z', 'hotspot-dot+X+Y-Z', 'hotspot-dim+X-Z');
+          drawLine(lines[2], 'hotspot-dot+X+Y-Z', 'hotspot-dot-X+Y-Z'); // sempre visibile
+          drawLine(lines[3], 'hotspot-dot-X+Y-Z', 'hotspot-dot-X-Y-Z', 'hotspot-dim-X-Z');
+          drawLine(lines[4], 'hotspot-dot-X-Y-Z', 'hotspot-dot-X-Y+Z', 'hotspot-dim-X-Y');
         };
 
-        // --- Posizionamento hotspot dimensioni in base al bounding box ---
-        mv.addEventListener('load', ()=>{
+        // Posizionamento dimensioni in base al bounding box
+        mv.addEventListener('load', () => {
           const c = mv.getBoundingBoxCenter();
-          const s = mv.getDimensions(); // {x,y,z} (metri)
+          const s = mv.getDimensions(); // {x,y,z} in metri
           const x2 = s.x/2, y2 = s.y/2, z2 = s.z/2;
 
-          // Vertici
+          // DOT ai vertici
           mv.updateHotspot({ name:'hotspot-dot+X-Y+Z', position:`${c.x + x2} ${c.y - y2} ${c.z + z2}` });
           mv.updateHotspot({ name:'hotspot-dot+X-Y-Z', position:`${c.x + x2} ${c.y - y2} ${c.z - z2}` });
           mv.updateHotspot({ name:'hotspot-dot+X+Y-Z', position:`${c.x + x2} ${c.y + y2} ${c.z - z2}` });
@@ -177,7 +170,7 @@
           mv.updateHotspot({ name:'hotspot-dot-X-Y-Z', position:`${c.x - x2} ${c.y - y2} ${c.z - z2}` });
           mv.updateHotspot({ name:'hotspot-dot-X-Y+Z', position:`${c.x - x2} ${c.y - y2} ${c.z + z2}` });
 
-          // Etichette (testo come nella demo: cm, una per dimensione/faccia)
+          // Etichette (testo in cm come demo, posizionate "fuori" dal box)
           mv.updateHotspot({ name:'hotspot-dim+X-Y', position:`${c.x + x2*1.2} ${c.y - y2*1.1} ${c.z}` });
           mv.querySelector('button[slot="hotspot-dim+X-Y"]').textContent = `${(s.z*100).toFixed(0)} cm`;
 
@@ -193,12 +186,29 @@
           mv.updateHotspot({ name:'hotspot-dim-X-Y', position:`${c.x - x2*1.2} ${c.y - y2*1.1} ${c.z}` });
           mv.querySelector('button[slot="hotspot-dim-X-Y"]').textContent = `${(s.z*100).toFixed(0)} cm`;
 
-          renderSVG();
-          setAnnoVisibility();
+          // Stato iniziale + prime linee
+          setAnnoVisibility(chkAnno.checked);
           setDimsVisibility(chkDims.checked);
+          renderSVG();
 
           // Aggiorna le linee quando si muove la camera
           mv.addEventListener('camera-change', renderSVG);
+        });
+
+        // Toggle UI
+        chkAnno.addEventListener('change', () => setAnnoVisibility(chkAnno.checked));
+        chkDims.addEventListener('change', () => setDimsVisibility(chkDims.checked));
+
+        // AR: overlay DOM visibili solo in WebXR. In Scene Viewer / Quick Look li nascondiamo.
+        mv.addEventListener('ar-status', (ev) => {
+          const mode = ev.detail.mode; // 'webxr' | 'scene-viewer' | 'quick-look'
+          const onExternal = (mode !== 'webxr') && ev.detail.status === 'session-started';
+          if (onExternal) {
+            setDimsVisibility(false);
+            setAnnoVisibility(annosVisible); // non si vedranno comunque, ma teniamo lo stato
+          } else {
+            setDimsVisibility(chkDims.checked);
+          }
         });
       })();
     </script>
