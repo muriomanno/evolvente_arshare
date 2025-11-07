@@ -6,19 +6,24 @@
     <meta name="description" content="&lt;model-viewer&gt; template">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" href="./styles.css" rel="stylesheet"/>
-    <!-- CSS aggiuntivo per il logo overlay -->
     <link type="text/css" href="./styles_2.css" rel="stylesheet"/>
-    <!-- Favicon dedicata (diversa dal logo overlay) -->
+
+    <!-- Favicon -->
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-    <!-- Fallback PNG -->
     <link rel="icon" href="./favicon-32.png" sizes="32x32" type="image/png">
     <link rel="apple-touch-icon" href="./favicon-180.png">
-    <!-- (Opzionale) colore barra del browser -->
     <meta name="theme-color" content="#0b0c0f">
+
+    <!-- Stile minimo per le linee tratteggiate (come nella demo) -->
+    <style>
+      .dimensionLineContainer{ pointer-events:none; display:block; }
+      .dimensionLine{ stroke:#16a5e6; stroke-width:2; stroke-dasharray:2; }
+      .dim.hide, .dimensionLine.hide{ display:none; }
+    </style>
   </head>
   <body>
-    <!-- <model-viewer> HTML element -->
     <model-viewer
+      id="mv"
       src="mec.glb"
       ar
       ar-modes="webxr scene-viewer quick-look"
@@ -31,7 +36,7 @@
       min-camera-orbit="auto auto 5.201m"
       min-field-of-view="15.67deg">
 
-      <!-- HOTSPOT inseriti tramite modeleditor (ora nascondibili via toggle) -->
+      <!-- I TUOI HOTSPOT (annotazioni) - restano invariati e ora sono togliibili -->
       <button class="Hotspot" slot="hotspot-1" data-position="1.4000000029802322m 1.3092575080869793m -0.4607462984277556m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
         <div class="HotspotAnnotation">Quadro comandi</div>
       </button>
@@ -48,89 +53,153 @@
         <div class="HotspotAnnotation">Frusta con doppia lama</div>
       </button>
 
-      <!-- Dimensioni (stile "pill" come nella demo; posizionate via JS) -->
-      <div class="Dim Hotspot" slot="hotspot-dim-x-min" data-position="0m 0m 0m" data-normal="1m 0m 0m" data-visibility-attribute="visible">
-        <div class="DimLabel" id="dim-x-label">X</div>
-      </div>
-      <div class="Dim Hotspot" slot="hotspot-dim-y-min" data-position="0m 0m 0m" data-normal="0m 1m 0m" data-visibility-attribute="visible">
-        <div class="DimLabel" id="dim-y-label">Y</div>
-      </div>
-      <div class="Dim Hotspot" slot="hotspot-dim-z-min" data-position="0m 0m 0m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
-        <div class="DimLabel" id="dim-z-label">Z</div>
-      </div>
+      <!-- === BOUNDING BOX DIMENSIONS (come nella demo) === -->
+      <!-- Vertici (8 dot) -->
+      <button slot="hotspot-dot+X-Y+Z" class="dot dim"    data-position="1 -1  1" data-normal="1 0 0"></button>
+      <button slot="hotspot-dot+X-Y-Z" class="dot dim"    data-position="1 -1 -1" data-normal="1 0 0"></button>
+      <button slot="hotspot-dot+X+Y-Z" class="dot dim"    data-position="1  1 -1" data-normal="0 1 0"></button>
+      <button slot="hotspot-dot-X+Y-Z" class="dot dim"    data-position="-1 1 -1" data-normal="0 1 0"></button>
+      <button slot="hotspot-dot-X-Y-Z" class="dot dim"    data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+      <button slot="hotspot-dot-X-Y+Z" class="dot dim"    data-position="-1 -1 1" data-normal="-1 0 0"></button>
 
-      <div class="progress-bar hide" slot="progress-bar">
-        <div class="update-bar"></div>
-      </div>
+      <!-- Etichette dimensioni (3) sulle tre facce ortogonali -->
+      <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0"  data-normal="1 0 0"></button> <!-- mostra Z -->
+      <button slot="hotspot-dim+X-Z" class="dim" data-position="1  0 -1" data-normal="1 0 0"></button> <!-- mostra Y -->
+      <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button> <!-- mostra Y (lato opposto) -->
+      <button slot="hotspot-dim-Y-Z" class="dim" data-position="0  1 -1" data-normal="0 1 0"></button>  <!-- mostra X -->
+      <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button> <!-- mostra Z (lato opposto) -->
+
+      <!-- Linee tratteggiate (5) -->
+      <svg id="dimLines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" class="dimensionLineContainer">
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+      </svg>
+
+      <!-- barra di progresso / AR prompt -->
+      <div class="progress-bar hide" slot="progress-bar"><div class="update-bar"></div></div>
       <button slot="ar-button" id="ar-button">View in your space</button>
-      <div id="ar-prompt">
-        <img src="ar_hand_prompt.png" alt="">
-      </div>
+      <div id="ar-prompt"><img src="ar_hand_prompt.png" alt=""></div>
     </model-viewer>
 
-    <!-- UI: spunte per annotazioni e dimensioni -->
+    <!-- UI overlay: toggle annotazioni + dimensioni -->
     <div class="mv-ui">
       <label><input type="checkbox" id="toggle-annotazioni" checked> Mostra annotazioni</label>
       <label><input type="checkbox" id="toggle-dimensioni" checked> Mostra dimensioni</label>
     </div>
 
-    <!-- Logo overlay -->
+    <!-- Logo -->
     <div class="logo-overlay">
       <img src="./Asset%2026BW.svg" alt="Logo">
     </div>
 
     <script src="script.js"></script>
-    <!-- Loads <model-viewer> for browsers: -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
-    <!-- Logica toggle + dimensioni -->
+    <!-- Logica dimensioni + toggle (adattata dalla demo ufficiale) -->
     <script>
-      (function() {
-        const mv = document.querySelector('model-viewer');
-        const chkAnnotazioni = document.getElementById('toggle-annotazioni');
-        const chkDimensioni  = document.getElementById('toggle-dimensioni');
-        const dimX = document.getElementById('dim-x-label');
-        const dimY = document.getElementById('dim-y-label');
-        const dimZ = document.getElementById('dim-z-label');
+      (function(){
+        const mv = document.getElementById('mv');
 
-        function updateAnnotazioni() {
-          const annos = mv.querySelectorAll('.Hotspot:not(.Dim)');
-          annos.forEach(el => { el.style.display = chkAnnotazioni.checked ? '' : 'none'; });
+        // --- Toggle ---
+        const chkAnno = document.getElementById('toggle-annotazioni');
+        const chkDims = document.getElementById('toggle-dimensioni');
+
+        function setAnnoVisibility() {
+          mv.querySelectorAll('.Hotspot:not(.dim)').forEach(el => {
+            el.style.display = chkAnno.checked ? '' : 'none';
+          });
         }
 
-        function updateDimensioni() {
-          const dims = mv.querySelectorAll('.Dim');
-          dims.forEach(el => { el.style.display = chkDimensioni.checked ? '' : 'none'; });
+        function setDimsVisibility(visible) {
+          // Etichette + linee + dot
+          const dimEls = [
+            ...mv.querySelectorAll('.dim'),
+            mv.querySelector('#dimLines')
+          ];
+          dimEls.forEach(el => {
+            if (!el) return;
+            if (visible) el.classList.remove('hide');
+            else el.classList.add('hide');
+          });
         }
 
-        function placeDimensions() {
-          const d = mv.getDimensions(); // {x,y,z} in metri
-          if (!d) return;
+        chkAnno.addEventListener('change', setAnnoVisibility);
+        chkDims.addEventListener('change', ()=> setDimsVisibility(chkDims.checked));
 
-          dimX.textContent = d.x.toFixed(2) + ' m';
-          dimY.textContent = d.y.toFixed(2) + ' m';
-          dimZ.textContent = d.z.toFixed(2) + ' m';
-
-          const hx = (d.x / 2).toFixed(4);
-          const hy = (d.y / 2).toFixed(4);
-          const hz = (d.z / 2).toFixed(4);
-
-          mv.querySelector('[slot="hotspot-dim-x-min"]')
-            .setAttribute('data-position', `${hx}m 0m 0m`);
-          mv.querySelector('[slot="hotspot-dim-y-min"]')
-            .setAttribute('data-position', `0m ${hy}m 0m`);
-          mv.querySelector('[slot="hotspot-dim-z-min"]')
-            .setAttribute('data-position', `0m 0m ${hz}m`);
-        }
-
-        mv.addEventListener('load', () => {
-          placeDimensions();
-          updateAnnotazioni();
-          updateDimensioni();
+        // In AR: nascondi overlay quando parte una sessione "esterna" (Scene Viewer / Quick Look)
+        mv.addEventListener('ar-status', (ev)=>{
+          const {status, mode} = ev.detail; // mode = 'webxr' | 'scene-viewer' | 'quick-look'
+          const allowOverlay = (mode === 'webxr'); // overlay visibili solo in WebXR
+          setDimsVisibility(chkDims.checked && allowOverlay && status !== 'session-started');
+          setAnnoVisibility(); // le annotazioni restano sotto controllo del checkbox; ma in non-WebXR non si vedono comunque
         });
 
-        chkAnnotazioni.addEventListener('change', updateAnnotazioni);
-        chkDimensioni .addEventListener('change', updateDimensioni);
+        // --- Linee tratteggiate (SVG) ---
+        const dimLines = mv.querySelectorAll('#dimLines line');
+
+        function drawLine(svgLine, aName, bName, tieToName) {
+          const a = mv.queryHotspot(aName);
+          const b = mv.queryHotspot(bName);
+          const tie = tieToName ? mv.queryHotspot(tieToName) : null;
+          if (!a || !b) return;
+
+          svgLine.setAttribute('x1', a.canvasPosition.x);
+          svgLine.setAttribute('y1', a.canvasPosition.y);
+          svgLine.setAttribute('x2', b.canvasPosition.x);
+          svgLine.setAttribute('y2', b.canvasPosition.y);
+
+          if (tie && !tie.facingCamera) svgLine.classList.add('hide');
+          else svgLine.classList.remove('hide');
+        }
+
+        const renderSVG = () => {
+          drawLine(dimLines[0], 'hotspot-dot+X-Y+Z', 'hotspot-dot+X-Y-Z', 'hotspot-dim+X-Y');
+          drawLine(dimLines[1], 'hotspot-dot+X-Y-Z', 'hotspot-dot+X+Y-Z', 'hotspot-dim+X-Z');
+          drawLine(dimLines[2], 'hotspot-dot+X+Y-Z', 'hotspot-dot-X+Y-Z'); // sempre visibile
+          drawLine(dimLines[3], 'hotspot-dot-X+Y-Z', 'hotspot-dot-X-Y-Z', 'hotspot-dim-X-Z');
+          drawLine(dimLines[4], 'hotspot-dot-X-Y-Z', 'hotspot-dot-X-Y+Z', 'hotspot-dim-X-Y');
+        };
+
+        // --- Posizionamento hotspot dimensioni in base al bounding box ---
+        mv.addEventListener('load', ()=>{
+          const c = mv.getBoundingBoxCenter();
+          const s = mv.getDimensions(); // {x,y,z} (metri)
+          const x2 = s.x/2, y2 = s.y/2, z2 = s.z/2;
+
+          // Vertici
+          mv.updateHotspot({ name:'hotspot-dot+X-Y+Z', position:`${c.x + x2} ${c.y - y2} ${c.z + z2}` });
+          mv.updateHotspot({ name:'hotspot-dot+X-Y-Z', position:`${c.x + x2} ${c.y - y2} ${c.z - z2}` });
+          mv.updateHotspot({ name:'hotspot-dot+X+Y-Z', position:`${c.x + x2} ${c.y + y2} ${c.z - z2}` });
+          mv.updateHotspot({ name:'hotspot-dot-X+Y-Z', position:`${c.x - x2} ${c.y + y2} ${c.z - z2}` });
+          mv.updateHotspot({ name:'hotspot-dot-X-Y-Z', position:`${c.x - x2} ${c.y - y2} ${c.z - z2}` });
+          mv.updateHotspot({ name:'hotspot-dot-X-Y+Z', position:`${c.x - x2} ${c.y - y2} ${c.z + z2}` });
+
+          // Etichette (testo come nella demo: cm, una per dimensione/faccia)
+          mv.updateHotspot({ name:'hotspot-dim+X-Y', position:`${c.x + x2*1.2} ${c.y - y2*1.1} ${c.z}` });
+          mv.querySelector('button[slot="hotspot-dim+X-Y"]').textContent = `${(s.z*100).toFixed(0)} cm`;
+
+          mv.updateHotspot({ name:'hotspot-dim+X-Z', position:`${c.x + x2*1.2} ${c.y} ${c.z - z2*1.2}` });
+          mv.querySelector('button[slot="hotspot-dim+X-Z"]').textContent = `${(s.y*100).toFixed(0)} cm`;
+
+          mv.updateHotspot({ name:'hotspot-dim-X-Z', position:`${c.x - x2*1.2} ${c.y} ${c.z - z2*1.2}` });
+          mv.querySelector('button[slot="hotspot-dim-X-Z"]').textContent = `${(s.y*100).toFixed(0)} cm`;
+
+          mv.updateHotspot({ name:'hotspot-dim-Y-Z', position:`${c.x} ${c.y + y2*1.1} ${c.z - z2*1.1}` });
+          mv.querySelector('button[slot="hotspot-dim-Y-Z"]').textContent = `${(s.x*100).toFixed(0)} cm`;
+
+          mv.updateHotspot({ name:'hotspot-dim-X-Y', position:`${c.x - x2*1.2} ${c.y - y2*1.1} ${c.z}` });
+          mv.querySelector('button[slot="hotspot-dim-X-Y"]').textContent = `${(s.z*100).toFixed(0)} cm`;
+
+          renderSVG();
+          setAnnoVisibility();
+          setDimsVisibility(chkDims.checked);
+
+          // Aggiorna le linee quando si muove la camera
+          mv.addEventListener('camera-change', renderSVG);
+        });
       })();
     </script>
   </body>
