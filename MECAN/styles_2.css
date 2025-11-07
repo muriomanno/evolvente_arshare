@@ -1,21 +1,20 @@
-/* Overlay del logo: fisso, sopra il viewer, non blocca i gesti */
 .logo-overlay {
   position: fixed;
   top: calc(16px + env(safe-area-inset-top));
   left: calc(16px + env(safe-area-inset-left));
-  z-index: 9999;
-  pointer-events: none;
+  z-index: 99999;
+  pointer-events: none; /* non blocca drag/zoom */
 }
 
-/* larghezza esplicita: se l'SVG non ha dimensioni, così si vede */
 .logo-overlay img {
   display: block;
-  width: clamp(96px, 18vw, 160px);
+  width: clamp(96px, 18vw, 160px); /* dimensione certa anche per SVG senza viewBox */
   height: auto;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,.25));
+  opacity: 0.95;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.35));
 }
 
+/* opzionale: nascondi su schermi molto piccoli */
 @media (max-width: 360px) {
   .logo-overlay { display: none; }
 }
