@@ -1,3 +1,21 @@
 /* Overlay del logo: fisso, sopra il viewer, non blocca i gesti */
 .logo-overlay {
-.logo-overlay { outline: 1px dashed red; }
+  position: fixed;
+  top: calc(16px + env(safe-area-inset-top));
+  left: calc(16px + env(safe-area-inset-left));
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* larghezza esplicita: se l'SVG non ha dimensioni, così si vede */
+.logo-overlay img {
+  display: block;
+  width: clamp(96px, 18vw, 160px);
+  height: auto;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.25));
+}
+
+@media (max-width: 360px) {
+  .logo-overlay { display: none; }
+}
